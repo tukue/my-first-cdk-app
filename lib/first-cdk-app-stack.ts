@@ -4,11 +4,16 @@ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as apigateway from 'aws-cdk-lib/aws-apigateway'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
-import { LambdaRestApi } from 'aws-cdk-lib/aws-apigateway';
+import { LambdaRestApi } from 'aws-cdk-lib/aws-apigateway'; 
+
+interface MyCdkStackProps extends StackProps {
+  stackName: 'blue' | 'green'
+  deploymentEnvironment: 'blue' | 'green';
+}
 
 //begin stack definition
 export class FirstCdkAppStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, props:MyCdkStackProps ) {
     super(scope, id, props);
 
     //define dynamodb table
@@ -20,6 +25,7 @@ export class FirstCdkAppStack extends Stack {
 
     //define lambda function and regeference function file
     const lambda_backend = new NodejsFunction(this, "function", {
+      runtime: lambda.Runtime.NODEJS_16_X,
       tracing: lambda.Tracing.ACTIVE,
       environment: {
         DYNAMODB: dynamodb_table.tableName
